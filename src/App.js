@@ -1,10 +1,11 @@
+import { WeatherProvider } from "./contexts/WeatherContext";
 import HeroSection from "./Pages/HeroSection";
 
 const App = () => {
   return (
-    <div>
+    <WeatherProvider>
       <HeroSection />
-    </div>
+    </WeatherProvider>
   );
 };
 

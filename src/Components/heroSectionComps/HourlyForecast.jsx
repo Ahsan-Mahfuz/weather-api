@@ -19,7 +19,7 @@ const HourlyForecastMain = ({
   };
 
   return (
-    <div className="bg-slate-800  p-4 rounded-3xl w-full max-w-sm border border-slate-700  overflow-hidden mt-6 md:mt-0 relative">
+    <div className="bg-slate-800  p-4 rounded-3xl w-full  border border-slate-700  overflow-hidden mt-6 md:mt-0 relative">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-white text-xl font-bold">Hourly forecast</h2>
         <div className="relative">
@@ -32,7 +32,7 @@ const HourlyForecastMain = ({
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute top-12 right-0  z-10 w-48 bg-slate-800 backdrop-blur-md bg-opacity-70 rounded-3xl border border-slate-700 shadow-xl  overflow-hidden">
+            <div className="absolute top-12 right-0  z-10 w-48 bg-[#2A3140] backdrop-blur-md bg-opacity-70 rounded-3xl border border-slate-700 shadow-xl  overflow-hidden">
               {days.map((day) => (
                 <div
                   key={day}
@@ -154,7 +154,7 @@ const HourlyForecast = () => {
   };
 
   return (
-    <div className="min-h-screen  font-inter text-white flex items-center justify-center p-4">
+    <div className="  font-inter text-white flex items-center justify-center ">
       <HourlyForecastMain
         forecast={mockForecast}
         selectedDay={selectedDay}

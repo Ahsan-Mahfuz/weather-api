@@ -15,7 +15,7 @@ const SomethingWentWrong = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center  p-4">
       <div className="flex flex-col items-center text-center ">
         <div className="mb-8">
           <img src="/icons/error.svg" alt="Error" className="w-18 h-18" />
