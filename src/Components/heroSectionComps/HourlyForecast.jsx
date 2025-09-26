@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import downIcon from "../../assets/icons/down.svg";
 import { useWeather } from "../../contexts/WeatherContext";
 
@@ -124,12 +124,6 @@ const HourlyForecast = () => {
   const [processedForecast, setProcessedForecast] = useState({});
   const [days, setDays] = useState([]);
 
-  useEffect(() => {
-    if (state.hourlyForecast && state.hourlyForecast.length > 0) {
-      processHourlyForecast();
-    }
-  }, [state.hourlyForecast, state.units]);
-
   const formatTemperature = (temp) => {
     return Math.round(temp);
   };
@@ -155,7 +149,27 @@ const HourlyForecast = () => {
     }
   };
 
-  const processHourlyForecast = () => {
+  const generateHourlyFromDaily = useCallback((dayForecast) => {
+    const hours = [];
+    const baseTemp = dayForecast.temp.max;
+    const tempVariation = (dayForecast.temp.max - dayForecast.temp.min) / 8;
+
+    for (let i = 0; i < 8; i++) {
+      const hour = 12 + i;
+      const temp = Math.round(baseTemp - tempVariation * i);
+
+      hours.push({
+        time: hour > 12 ? `${hour - 12} PM` : `${hour} PM`,
+        temp: formatTemperature(temp),
+        icon: dayForecast.icon,
+        description: dayForecast.description,
+      });
+    }
+
+    return hours;
+  }, []);
+
+  const processHourlyForecast = useCallback(() => {
     if (!state.hourlyForecast || state.hourlyForecast.length === 0) {
       setProcessedForecast({});
       setDays([]);
@@ -211,27 +225,18 @@ const HourlyForecast = () => {
     if (allDays.length > 0 && !allDays.includes(selectedDay)) {
       setSelectedDay(allDays[0]);
     }
-  };
+  }, [
+    state.hourlyForecast,
+    state.dailyForecast,
+    selectedDay,
+    generateHourlyFromDaily,
+  ]);
 
-  const generateHourlyFromDaily = (dayForecast) => {
-    const hours = [];
-    const baseTemp = dayForecast.temp.max;
-    const tempVariation = (dayForecast.temp.max - dayForecast.temp.min) / 8;
-
-    for (let i = 0; i < 8; i++) {
-      const hour = 12 + i;
-      const temp = Math.round(baseTemp - tempVariation * i);
-
-      hours.push({
-        time: hour > 12 ? `${hour - 12} PM` : `${hour} PM`,
-        temp: formatTemperature(temp),
-        icon: dayForecast.icon,
-        description: dayForecast.description,
-      });
+  useEffect(() => {
+    if (state.hourlyForecast && state.hourlyForecast.length > 0) {
+      processHourlyForecast();
     }
-
-    return hours;
-  };
+  }, [processHourlyForecast, state.hourlyForecast]);
 
   if (!state.currentWeather && !state.loading) {
     return (
