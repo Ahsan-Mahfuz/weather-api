@@ -21,7 +21,7 @@ const HeroSection = () => {
 
   useEffect(() => {
     fetchWeatherByLocation();
-  }, [fetchWeatherByLocation]);
+  }, []);
 
   if (error) {
     return (

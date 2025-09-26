@@ -4,7 +4,6 @@ import { useState } from "react";
 const SomethingWentWrong = ({ message }) => {
   const [isRetrying, setIsRetrying] = useState(false);
 
-  console.log(message);
   const handleRetry = () => {
     setIsRetrying(true);
     window.location.reload();
