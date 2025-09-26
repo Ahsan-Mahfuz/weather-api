@@ -1,8 +1,6 @@
 import React from "react";
 
 import logo from "../../assets/icons/logo192.svg";
-import unitsIcon from "../../assets/icons/units.svg";
-import downIcon from "../../assets/icons/down.svg";
 import UnitDropDown from "./UnitDropDown";
 
 const Header = () => {
@@ -12,11 +10,6 @@ const Header = () => {
         <img src={logo} alt="logo" />
         <div>Weather Now</div>
       </section>
-      {/* <section className="bg-[#262540] rounded-2xl flex gap-3 px-7 py-3">
-        <img src={unitsIcon} alt="units" />
-        <div>Units</div>
-        <img src={downIcon} alt="down" />
-      </section> */}
       <UnitDropDown />
     </div>
   );
