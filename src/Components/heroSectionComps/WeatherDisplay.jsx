@@ -123,11 +123,11 @@ const WeatherDisplay = ({ weatherData }) => {
       />
 
       <div className="relative z-10 h-full ">
-        <div className="flex flex-col justify-center max-sm:items-center h-full">
+        <div className="flex flex-col justify-center max-xl:items-center h-full">
           <div className="text-2xl md:text-3xl font-bold mb-1">{location}</div>
           <div className="text-sm opacity-80">{currentDate}</div>
 
-          <div className=" max-sm:flex items-center space-x-4 mt-5 hidden ">
+          <div className=" max-xl:flex items-center space-x-4 mt-5 hidden ">
             <div className="text-5xl md:text-6xl text-yellow-400">
               {weatherEmoji}
             </div>
@@ -138,7 +138,7 @@ const WeatherDisplay = ({ weatherData }) => {
           </div>
         </div>
 
-        <div className="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center space-x-4 max-sm:hidden">
+        <div className="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center space-x-4 max-xl:hidden">
           <div className="text-5xl md:text-6xl text-yellow-400">
             {weatherEmoji}
           </div>

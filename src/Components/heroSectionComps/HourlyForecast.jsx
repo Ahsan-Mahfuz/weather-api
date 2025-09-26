@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import downIcon from "../../assets/icons/down.svg";
+import { useWeather } from "../../contexts/WeatherContext";
 
 const HourlyForecastMain = ({
   forecast,
@@ -18,25 +19,65 @@ const HourlyForecastMain = ({
     setIsDropdownOpen(false);
   };
 
+  const getWeatherIcon = (iconCode) => {
+    if (!iconCode) return "https://openweathermap.org/img/wn/01d@2x.png";
+    return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+  };
+
+  if (!forecast || Object.keys(forecast).length === 0) {
+    return (
+      <div className="bg-slate-800 p-4 rounded-3xl w-full border border-slate-700 overflow-hidden mt-6 md:mt-0">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-white text-xl font-bold">Hourly forecast</h2>
+          <div className="bg-slate-700 text-white rounded-full py-1.5 px-5">
+            <span className="opacity-50">Loading...</span>
+          </div>
+        </div>
+        <div className="space-y-3 ">
+          {Array(8)
+            .fill()
+            .map((_, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between bg-slate-700 rounded-2xl p-4"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-6 h-6 bg-slate-600 rounded animate-pulse"></div>
+                  <span className="text-slate-400">--:--</span>
+                </div>
+                <span className="text-slate-400">--°</span>
+              </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-slate-800  p-4 rounded-3xl w-full  border border-slate-700  overflow-hidden mt-6 md:mt-0 relative">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-slate-800 p-4 rounded-3xl w-full border min-h-[50vh] border-slate-700 overflow-hidden mt-6 md:mt-0 relative ">
+      <div className="flex items-center justify-between mb-4 ">
         <h2 className="text-white text-xl font-bold">Hourly forecast</h2>
-        <div className="relative">
+        <div className="relative ">
           <button
             className="flex items-center gap-3 bg-slate-700  text-white font-semibold rounded-full py-1.5 px-5 cursor-pointer border border-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
             onClick={toggleDropdown}
           >
             <span>{selectedDay}</span>
-            <img src={downIcon} alt="down" />
+            <img
+              src={downIcon}
+              alt="down"
+              className={`transition-transform duration-200 ${
+                isDropdownOpen ? "rotate-180" : ""
+              }`}
+            />
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute top-12 right-0  z-10 w-48 bg-[#2A3140] backdrop-blur-md bg-opacity-70 rounded-3xl border border-slate-700 shadow-xl  overflow-hidden">
+            <div className="absolute top-12 right-0 z-50 w-48 bg-[#2A3140] backdrop-blur-md bg-opacity-70 rounded-3xl border border-slate-700 shadow-xl overflow-hidden">
               {days.map((day) => (
                 <div
                   key={day}
-                  className={`font-semibold text-lg py-3 px-4  cursor-pointer transition-all duration-300 ease-in-out ${
+                  className={`font-semibold text-lg py-3 px-4 cursor-pointer transition-all duration-300 ease-in-out ${
                     selectedDay === day
                       ? "bg-slate-700 text-white"
                       : "text-slate-300 hover:bg-slate-700 hover:text-white"
@@ -50,113 +91,167 @@ const HourlyForecastMain = ({
           )}
         </div>
       </div>
-      <div className="space-y-3">
-        {forecast[selectedDay].map((item, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between bg-slate-700 rounded-2xl p-4 transition-all duration-300 ease-in-out hover:bg-slate-600 cursor-pointer"
-          >
-            <div className="flex items-center space-x-4">
-              <span className="text-white text-2xl">{item.icon}</span>
-              <span className="text-slate-200 font-medium">{item.time}</span>
+      <div className="space-y-3 ">
+        {forecast[selectedDay] &&
+          forecast[selectedDay].map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between bg-slate-700 rounded-2xl p-4 transition-all duration-300 ease-in-out hover:bg-slate-600 cursor-pointer"
+            >
+              <div className="flex items-center space-x-4">
+                <img
+                  src={getWeatherIcon(item.icon)}
+                  alt={item.description || "weather"}
+                  className="w-8 h-8"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://openweathermap.org/img/wn/01d@2x.png";
+                  }}
+                />
+                <span className="text-slate-200 font-medium">{item.time}</span>
+              </div>
+              <span className="text-white font-bold text-lg">{item.temp}°</span>
             </div>
-            <span className="text-white font-bold text-lg">{item.temp}°</span>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
 };
 
 const HourlyForecast = () => {
-  const [selectedDay, setSelectedDay] = useState("Tuesday");
+  const { state } = useWeather();
+  const [selectedDay, setSelectedDay] = useState("Today");
+  const [processedForecast, setProcessedForecast] = useState({});
+  const [days, setDays] = useState([]);
 
-  const days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  const mockForecast = {
-    Monday: [
-      { time: "3 PM", temp: 20, icon: "☁️" },
-      { time: "4 PM", temp: 20, icon: "☁️" },
-      { time: "5 PM", temp: 20, icon: "☀️" },
-      { time: "6 PM", temp: 19, icon: "☁️" },
-      { time: "7 PM", temp: 18, icon: "☁️" },
-      { time: "8 PM", temp: 18, icon: "🌊" },
-      { time: "9 PM", temp: 17, icon: "☁️" },
-      { time: "10 PM", temp: 17, icon: "☁️" },
-    ],
-    Tuesday: [
-      { time: "3 PM", temp: 18, icon: "☁️" },
-      { time: "4 PM", temp: 18, icon: "☁️" },
-      { time: "5 PM", temp: 19, icon: "☀️" },
-      { time: "6 PM", temp: 17, icon: "☁️" },
-      { time: "7 PM", temp: 16, icon: "☁️" },
-      { time: "8 PM", temp: 16, icon: "🌊" },
-      { time: "9 PM", temp: 15, icon: "☁️" },
-      { time: "10 PM", temp: 15, icon: "☁️" },
-    ],
-    Wednesday: [
-      { time: "3 PM", temp: 19, icon: "☁️" },
-      { time: "4 PM", temp: 20, icon: "☀️" },
-      { time: "5 PM", temp: 21, icon: "☀️" },
-      { time: "6 PM", temp: 20, icon: "☁️" },
-      { time: "7 PM", temp: 19, icon: "☁️" },
-      { time: "8 PM", temp: 19, icon: "🌊" },
-      { time: "9 PM", temp: 18, icon: "☁️" },
-      { time: "10 PM", temp: 18, icon: "☁️" },
-    ],
-    Thursday: [
-      { time: "3 PM", temp: 22, icon: "☁️" },
-      { time: "4 PM", temp: 21, icon: "☁️" },
-      { time: "5 PM", temp: 23, icon: "☀️" },
-      { time: "6 PM", temp: 22, icon: "☁️" },
-      { time: "7 PM", temp: 21, icon: "☁️" },
-      { time: "8 PM", temp: 20, icon: "🌊" },
-      { time: "9 PM", temp: 19, icon: "☁️" },
-      { time: "10 PM", temp: 19, icon: "☁️" },
-    ],
-    Friday: [
-      { time: "3 PM", temp: 25, icon: "☀️" },
-      { time: "4 PM", temp: 24, icon: "☀️" },
-      { time: "5 PM", temp: 23, icon: "☀️" },
-      { time: "6 PM", temp: 22, icon: "☁️" },
-      { time: "7 PM", temp: 21, icon: "☁️" },
-      { time: "8 PM", temp: 20, icon: "🌊" },
-      { time: "9 PM", temp: 19, icon: "☁️" },
-      { time: "10 PM", temp: 18, icon: "☁️" },
-    ],
-    Saturday: [
-      { time: "3 PM", temp: 24, icon: "☀️" },
-      { time: "4 PM", temp: 23, icon: "☀️" },
-      { time: "5 PM", temp: 22, icon: "☁️" },
-      { time: "6 PM", temp: 21, icon: "☁️" },
-      { time: "7 PM", temp: 20, icon: "☁️" },
-      { time: "8 PM", temp: 19, icon: "🌊" },
-      { time: "9 PM", temp: 18, icon: "☁️" },
-      { time: "10 PM", temp: 17, icon: "☁️" },
-    ],
-    Sunday: [
-      { time: "3 PM", temp: 23, icon: "☀️" },
-      { time: "4 PM", temp: 22, icon: "☀️" },
-      { time: "5 PM", temp: 21, icon: "☁️" },
-      { time: "6 PM", temp: 20, icon: "☁️" },
-      { time: "7 PM", temp: 19, icon: "☁️" },
-      { time: "8 PM", temp: 18, icon: "🌊" },
-      { time: "9 PM", temp: 17, icon: "☁️" },
-      { time: "10 PM", temp: 16, icon: "☁️" },
-    ],
+  useEffect(() => {
+    if (state.hourlyForecast && state.hourlyForecast.length > 0) {
+      processHourlyForecast();
+    }
+  }, [state.hourlyForecast, state.units]);
+
+  const formatTemperature = (temp) => {
+    return Math.round(temp);
   };
 
+  const formatTime = (date) => {
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      hour12: true,
+    });
+  };
+
+  const formatDay = (date) => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return "Today";
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      return "Tomorrow";
+    } else {
+      return date.toLocaleDateString("en-US", { weekday: "long" });
+    }
+  };
+
+  const processHourlyForecast = () => {
+    if (!state.hourlyForecast || state.hourlyForecast.length === 0) {
+      setProcessedForecast({});
+      setDays([]);
+      return;
+    }
+
+    const forecast = {};
+    const daySet = new Set();
+
+    state.hourlyForecast.forEach((item) => {
+      const dayKey = formatDay(item.time);
+      daySet.add(dayKey);
+
+      if (!forecast[dayKey]) {
+        forecast[dayKey] = [];
+      }
+
+      forecast[dayKey].push({
+        time: formatTime(item.time),
+        temp: formatTemperature(item.temp),
+        icon: item.icon,
+        description: item.description,
+      });
+    });
+
+    const allDays = ["Today", "Tomorrow"];
+
+    if (state.dailyForecast && state.dailyForecast.length > 0) {
+      state.dailyForecast.forEach((day, index) => {
+        if (index > 1) {
+          const dayName = formatDay(day.date);
+          if (!allDays.includes(dayName)) {
+            allDays.push(dayName);
+          }
+        }
+      });
+    }
+
+    allDays.forEach((dayKey) => {
+      if (!forecast[dayKey] && state.dailyForecast) {
+        const dayForecast = state.dailyForecast.find(
+          (d) => formatDay(d.date) === dayKey
+        );
+        if (dayForecast) {
+          forecast[dayKey] = generateHourlyFromDaily(dayForecast);
+        }
+      }
+    });
+
+    setProcessedForecast(forecast);
+    setDays(allDays.filter((day) => forecast[day] && forecast[day].length > 0));
+
+    if (allDays.length > 0 && !allDays.includes(selectedDay)) {
+      setSelectedDay(allDays[0]);
+    }
+  };
+
+  const generateHourlyFromDaily = (dayForecast) => {
+    const hours = [];
+    const baseTemp = dayForecast.temp.max;
+    const tempVariation = (dayForecast.temp.max - dayForecast.temp.min) / 8;
+
+    for (let i = 0; i < 8; i++) {
+      const hour = 12 + i;
+      const temp = Math.round(baseTemp - tempVariation * i);
+
+      hours.push({
+        time: hour > 12 ? `${hour - 12} PM` : `${hour} PM`,
+        temp: formatTemperature(temp),
+        icon: dayForecast.icon,
+        description: dayForecast.description,
+      });
+    }
+
+    return hours;
+  };
+
+  if (!state.currentWeather && !state.loading) {
+    return (
+      <div className="bg-slate-800 p-4 rounded-3xl w-full border border-slate-700 overflow-hidden mt-6 md:mt-0">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-white text-xl font-bold">Hourly forecast</h2>
+        </div>
+        <div className="text-center py-8">
+          <p className="text-slate-400">
+            Search for a location to see hourly forecast
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="  font-inter text-white flex items-center justify-center ">
+    <div className="font-inter text-white flex items-center justify-center ">
       <HourlyForecastMain
-        forecast={mockForecast}
+        forecast={processedForecast}
         selectedDay={selectedDay}
         setSelectedDay={setSelectedDay}
         days={days}

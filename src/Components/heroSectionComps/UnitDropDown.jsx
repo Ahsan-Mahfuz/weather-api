@@ -64,7 +64,6 @@ const UnitDropDown = () => {
 
       {isOpen && (
         <div className="absolute top-full mt-2 right-0 w-64 bg-[#2A3140] rounded-lg shadow-xl text-white z-10 border border-[#3d4bbd]">
-          {/* Temperature Units */}
           <div className="p-4">
             <h3 className="font-bold text-lg mb-2">Temperature</h3>
             <div className="space-y-2">
@@ -97,7 +96,6 @@ const UnitDropDown = () => {
 
           <hr className="border-[#1E2533]" />
 
-          {/* Wind Speed Units */}
           <div className="p-4">
             <h3 className="font-bold text-lg mb-2">Wind Speed</h3>
             <div className="space-y-2">
@@ -124,7 +122,6 @@ const UnitDropDown = () => {
 
           <hr className="border-[#1E2533]" />
 
-          {/* Precipitation Units */}
           <div className="p-4">
             <h3 className="font-bold text-lg mb-2">Precipitation</h3>
             <div className="space-y-2">

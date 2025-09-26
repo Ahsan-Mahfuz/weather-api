@@ -65,6 +65,7 @@ export const weatherAPI = {
       }
 
       const data = await response.json();
+
       if (data.length === 0) {
         throw new Error("Location not found");
       }
